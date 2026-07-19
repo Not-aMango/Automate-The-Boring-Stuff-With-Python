@@ -1,4 +1,4 @@
-#!file:///home/notamango/PyCharmMiscProject/Python_files/.venv/bin/python3
+#!/home/notamango/PyCharmMiscProject/Python_files/.venv/bin/python3
 import webbrowser, sys, pyperclip
 
 url = 'https://www.google.com/maps/search/'
