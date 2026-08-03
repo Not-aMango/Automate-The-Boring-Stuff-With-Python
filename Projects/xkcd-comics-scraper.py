@@ -1,15 +1,24 @@
 from bs4 import BeautifulSoup
 import requests
 from pathlib import Path
+from os import listdir
 
-Path(Path.home()/'Comics').mkdir(parents= True,exist_ok= True)
+location = Path.home()/'Comics'
+location.mkdir(parents= True,exist_ok= True)
 
-i = 1
-downloaded = 0
+saved_images = len(listdir(location))
+if saved_images != 0:
+    page = saved_images + 1
+    print(f"Resuming Download\n"
+          f"Last Downloaded Image: {listdir(location)[-1]}\n"
+          f"Last Downloaded ImageNo.: {saved_images}\n")
+else: page = 1
 
+downloaded = saved_images
+print('Starting Download...')
 while True:
     try:
-        source = requests.get(f'https://xkcd.com/{i}/', timeout=10)
+        source = requests.get(f'https://xkcd.com/{page}/', timeout=10)
         source.raise_for_status()
 
         comic = BeautifulSoup(source.text,'lxml')
@@ -18,13 +27,13 @@ while True:
         title = comic.find('div',id='comic').img['title'].replace(' ','-')
         suffix = img_url.split('.')[-1]
 
-        img = requests.get(img_url)
+        img = requests.get(img_url, timeout=10)
         img.raise_for_status()
 
         with open(f'/home/notamango/Comics/{title}.{suffix}', 'wb') as image:
             image.write(img.content)
 
-        i += 1
+        page += 1
         downloaded += 1
     except requests.exceptions.HTTPError:
         print('\nComics download completed')
@@ -36,4 +45,4 @@ while True:
         print('\nKeyboard Interrupt')
         break
     finally:
-        print(f'Total comics downloaded: {downloaded}')
+        print(f'Downloaded Page: {downloaded}')
